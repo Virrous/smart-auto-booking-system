@@ -4,5 +4,8 @@ from django.shortcuts import render
 def index(request):
     return render(request,'index.html')
 
-def form(request):
-    return render(request,'form.html')
+def customer_form(request):
+    return render(request,'customer_form.html')
+
+def driver_form(request):
+    return render(request,'driver_form.html')
