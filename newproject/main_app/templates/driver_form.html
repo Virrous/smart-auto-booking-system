@@ -133,7 +133,11 @@
             <form id="login-form" class="active" method="post">
                 {% csrf_token %}
                 <label for="login-email">Email:</label>
+<<<<<<< Updated upstream
                 <input type="email" id="login-email" name="email" placeholder="Enter your email" required>
+=======
+                <input type="email" id="login-email" name= "email" placeholder="Enter your email" required>
+>>>>>>> Stashed changes
 
                 <label for="login-password">Password:</label>
                 <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
@@ -145,10 +149,17 @@
             <form id="register-form" method="post">
                 {% csrf_token %}
                 <label for="fname">First Name:</label>
+<<<<<<< Updated upstream
                 <input type="text" id="fname" name="fname" placeholder="Enter your first name" required>
 
                 <label for="lname">Last Name:</label>
                 <input type="text" id="lname" name="lname" placeholder="Enter your last name" required>
+=======
+                <input type="text" id="fname" name="firstname" placeholder="Enter your first name" required>
+
+                <label for="lname">Last Name:</label>  
+                <input type="text" id="lname" name="lastname" placeholder="Enter your last name" required>
+>>>>>>> Stashed changes
 
                 <label for="phone">Phone Number:</label>
                 <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
