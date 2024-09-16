@@ -130,38 +130,40 @@
         <!-- Form Content that Scrolls -->
         <div class="form-content">
             <!-- Login Form -->
-            <form id="login-form" class="active">
+            <form id="login-form" class="active" method="post">
+                {% csrf_token %}
                 <label for="login-email">Email:</label>
-                <input type="email" id="login-email" placeholder="Enter your email" required>
+                <input type="email" id="login-email" name="email" placeholder="Enter your email" required>
 
                 <label for="login-password">Password:</label>
-                <input type="password" id="login-password" placeholder="Enter your password" required>
+                <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
 
-                <button type="submit" class="btn">Login</button>
+                <button type="submit" name="login" class="btn">Login</button>
             </form>
 
             <!-- Register Form -->
-            <form id="register-form">
+            <form id="register-form" method="post">
+                {% csrf_token %}
                 <label for="fname">First Name:</label>
-                <input type="text" id="fname" placeholder="Enter your first name" required>
+                <input type="text" id="fname" name="fname" placeholder="Enter your first name" required>
 
                 <label for="lname">Last Name:</label>
-                <input type="text" id="lname" placeholder="Enter your last name" required>
+                <input type="text" id="lname" name="lname" placeholder="Enter your last name" required>
 
                 <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" placeholder="Enter your phone number" required>
+                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
 
                 <label for="reg-email">Email:</label>
-                <input type="email" id="reg-email" placeholder="Enter your email" required>
+                <input type="email" id="reg-email" name="email" placeholder="Enter your email" required>
 
                 <label for="reg-password">Password:</label>
-                <input type="password" id="reg-password" placeholder="Enter your password" required>
+                <input type="password" id="reg-password" name="password1" placeholder="Enter your password" required>
 
                 <label for="confirm-password">Confirm Password:</label>
-                <input type="password" id="confirm-password" placeholder="Confirm your password" required>
+                <input type="password" id="confirm-password" name="password2" placeholder="Confirm your password" required>
 
                 <label for="city">City:</label>
-                <select id="city" required>
+                <select id="city" name="city" required>
                     <option value="New York">New York</option>
                     <option value="Los Angeles">Los Angeles</option>
                     <option value="Chicago">Chicago</option>
@@ -171,16 +173,17 @@
                 <input type="date" id="dob" required> -->
 
                 <label for="license-num">License Number:</label>
-                <input type="text" id="license-num" placeholder="Enter your license number" required>
+                <input type="text" id="license-num" name="lisense-num" placeholder="Enter your license number" required>
 
-                <label for="license-pic">Upload License Picture:</label>
-                <input type="file" id="license-pic" accept="image/*" required>
+                {% comment %} <label for="license-pic">Upload License Picture:</label>
+                <input type="file" id="license-pic" name="lisense-pic" accept="image/*" required> {% endcomment %}
 
                 <!-- <label for="profile-pic">Upload Passport Size Photo:</label>
                 <input type="file" id="profile-pic" accept="image/*" required> -->
 
-                <button type="submit" class="btn">Register</button>
+                <button type="submit" name="register" class="btn">Register</button>
             </form>
+
         </div>
     </div>
 </div>

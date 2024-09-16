@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Rickshaw Finder</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            display: none; /* Hide map initially */
+            position: relative;
+        }
+        #miniMap {
+            height: 200px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-bottom: 2px solid #ccc;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        .map-confirm {
+            position: absolute;
+            top: 10px; /* Move to bottom */
+            left: 60%;
+            transform: translateX(-50%); /* Center it horizontally */
+            z-index: 1000;
+            {% comment %} display: none; {% endcomment %}
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .fare-info {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .fare-info h3 {
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #333;
+        }
+        .fare-info p {
+            font-size: 18px;
+            margin: 5px 0;
+            color: #555;
+        }
+        .fare-info span {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <div>
+        <label>
+            <input type="radio" name="tripType" value="one-way" checked> One-Way
+        </label>
+        <label>
+            <input type="radio" name="tripType" value="two-way"> Two-Way
+        </label>
+    </div>
+    
+    <div>
+        <button id="selectCurrentLocation">Select Current Location</button>
+        <button id="selectDestination" disabled>Select Destination</button>
+        <button id="calculate" disabled>Calculate Fare</button>
+    </div>
+</div>
+
+<div id="map"></div>
+<button class="map-confirm" id="confirmLocation">Confirm</button>
+
+<div id="miniMap"></div>
+
+<div class="fare-info">
+    <h3>Fare Estimator</h3>
+    <p><strong>Distance:</strong> <span id="distance">0</span> km</p>
+    <p><strong>Fare (Rs.):</strong> <span id="fare">0</span></p>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<script>
+    // Initialize variables
+    let startPoint, endPoint, startMarker, endMarker, miniStartMarker, miniEndMarker;
+    let isSelectingStart = false, isSelectingEnd = false;
+    let miniMap, miniRoute;
+    
+    // Initialize the main map
+    const map = L.map('map').setView([27.7172, 85.3240], 13); // Centered on Kathmandu
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(map);
+
+    // Initialize the mini map
+    miniMap = L.map('miniMap').setView([27.7172, 85.3240], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(miniMap);
+
+    // Function to get the current location
+    function getCurrentLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    startPoint = L.latLng(latitude, longitude);
+
+                    // Add a marker to the map for the current location
+                    if (startMarker) map.removeLayer(startMarker);
+                    startMarker = L.marker(startPoint).addTo(map).bindPopup("Current Location").openPopup();
+
+                    document.getElementById('selectDestination').disabled = false; // Enable the "Select Destination" button
+                    map.setView(startPoint, 13);  // Center the map on the current location
+                },
+                function() {
+                    alert("Unable to retrieve your location.");
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    // Event listener for selecting the current location
+    document.getElementById('selectCurrentLocation').addEventListener('click', function() {
+        isSelectingStart = true;
+        isSelectingEnd = false;
+        clearMiniMap(); // Clear miniMap markers and route when selecting new locations
+        getCurrentLocation();  // Call the function to get the current location
+        showMap();
+    });
+
+    document.getElementById('selectDestination').addEventListener('click', function() {
+        if (!startPoint) {
+            alert("Please confirm your current location first.");
+            return;
+        }
+        isSelectingEnd = true;
+        isSelectingStart = false;
+        showMap();
+    });
+
+    document.getElementById('confirmLocation').addEventListener('click', function() {
+        if (isSelectingStart && startPoint) {
+            document.getElementById('selectDestination').disabled = false;
+            isSelectingStart = false;
+        } else if (isSelectingEnd && endPoint) {
+            document.getElementById('calculate').disabled = false;
+            isSelectingEnd = false;
+        }
+        hideMap();
+    });
+
+    document.getElementById('calculate').addEventListener('click', function() {
+        if (!startPoint || !endPoint) {
+            alert("Please confirm both the current location and destination.");
+            return;
+        }
+
+        // Clear previous route and markers from the mini map
+        clearMiniMap();
+
+        // Calculate and display the route on the mini map
+        miniRoute = L.Routing.control({
+            waypoints: [startPoint, endPoint],
+            lineOptions: {
+                styles: [{ color: 'blue', weight: 4 }]
+            },
+            createMarker: function() { return null; } // Don't add extra markers
+        }).addTo(miniMap);
+
+        // Add new markers to the mini map
+        miniStartMarker = L.marker(startPoint).addTo(miniMap).bindPopup("Current Location").openPopup();
+        miniEndMarker = L.marker(endPoint).addTo(miniMap).bindPopup("Destination").openPopup();
+
+        // Calculate distance and fare
+        const distance = map.distance(startPoint, endPoint) / 1000;  // Convert to km
+        const tripType = document.querySelector('input[name="tripType"]:checked').value;
+        const totalDistance = (tripType === 'two-way') ? distance * 2 : distance;
+
+        const fare = calculateFare(totalDistance);
+        document.getElementById('distance').innerText = totalDistance.toFixed(2);
+        document.getElementById('fare').innerText = fare;
+
+        miniMap.fitBounds([startPoint, endPoint]);  // Adjust mini map to fit new markers
+    });
+
+    // Calculate fare based on distance
+    function calculateFare(distance) {
+        const petrolPrice = 200;  // Example petrol price per liter (₹)
+        const mileage = 20;       // Example mileage (km per liter for an auto rickshaw)
+        const farePerKm = (petrolPrice / mileage) * 2; // Fare factor
+
+        let fare = distance * farePerKm;
+        return fare.toFixed(2);
+    }
+
+    // Handle map clicks to select locations
+    map.on('click', function(e) {
+        if (isSelectingStart) {
+            if (startMarker) map.removeLayer(startMarker);
+            startPoint = e.latlng;
+            startMarker = L.marker(startPoint).addTo(map).bindPopup("Current Location").openPopup();
+            document.getElementById('confirmLocation').style.display = 'inline-block';
+        } else if (isSelectingEnd) {
+            if (endMarker) map.removeLayer(endMarker);
+            endPoint = e.latlng;
+            endMarker = L.marker(endPoint).addTo(map).bindPopup("Destination").openPopup();
+            document.getElementById('confirmLocation').style.display = 'inline-block';
+        }
+    });
+
+    // Show the map and confirm button
+    function showMap() {
+        document.getElementById('map').style.display = 'block';
+        document.getElementById('confirmLocation').style.display = 'inline-block';
+        setTimeout(() => {
+            map.invalidateSize();  // Ensure the map resizes properly after being shown
+        }, 200);
+    }
+
+    // Hide the map and confirm button
+    function hideMap() {
+        document.getElementById('map').style.display = 'none';
+        document.getElementById('confirmLocation').style.display = 'none';
+    }
+
+    // Clear all markers and routes from the mini map
+    function clearMiniMap() {
+        if (miniRoute) miniMap.removeControl(miniRoute); // Remove the route
+        if (miniStartMarker) miniMap.removeLayer(miniStartMarker); // Remove the start marker
+        if (miniEndMarker) miniMap.removeLayer(miniEndMarker); // Remove the end marker
+    }
+
+    // Reset markers after calculating fare
+    function resetMarkers() {
+        if (startMarker) map.removeLayer(startMarker);
+        if (endMarker) map.removeLayer(endMarker);
+        startMarker = null;
+        endMarker = null;
+        startPoint = null;
+        endPoint = null;
+        document.getElementById('selectDestination').disabled = true;
+        document.getElementById('calculate').disabled = true;
+        document.getElementById('distance').innerText = '0';
+        document.getElementById('fare').innerText = '0';
+    }
+</script>
+
+</body>
+</html>

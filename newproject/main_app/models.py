@@ -14,3 +14,25 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.email
+    
+class Driver(models.Model):
+    NEWYORK = 'New York'
+    LOSANGELES = 'Los Angeles'
+    CHICAGO = 'Chicago'
+
+    TYPE_CHOICES = [
+        (NEWYORK, 'New York'),
+        (LOSANGELES, 'Los Angeles'),
+        (CHICAGO, 'Chicago'),
+    ]
+
+    fname = models.CharField(max_length=50)
+    lname = models.CharField(max_length=50)
+    phone = models.PositiveIntegerField()
+    email = models.EmailField(max_length=50)
+    password = models.CharField(max_length=280)
+    city = models.CharField(max_length=20, choices=TYPE_CHOICES, default=NEWYORK)
+    lisense_num = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.fname +" "+ self.lname
