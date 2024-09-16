@@ -1,4 +1,4 @@
-{%load static%}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,13 +16,12 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
+            height: 100svh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
             justify-content: space-between;
         }
 
-        /* Header styling */
         header {
             background-color: #fff;
             padding: 20px;
@@ -32,22 +31,10 @@
             box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Navigation styling */
         nav ul {
             list-style-type: none;
             display: flex;
-            gap: 20px;
-        }
-
-        nav ul li {
-            display: inline;
-            position: relative;
-
-        }
-
-        nav ul li a:hover {
-            background-color: #F2F2F2;
-            color: rgb(83, 83, 231)
+            gap: 2vw;
         }
 
         nav ul li a {
@@ -57,73 +44,103 @@
             padding: 5px 20px;
             border-radius: 5px;
             transition: background-color 0.3s ease, color 0.3s ease;
-            margin-right: 2vw;
+        }
+
+        nav ul li a:hover {
+            background-color: #F2F2F2;
+            color: rgb(83, 83, 231);
         }
 
         .dropdown-menu {
             display: none;
-            /* Hide dropdown menu by default */
             position: absolute;
             top: 100%;
-            /* Position below the parent item */
             left: 0;
             background-color: #faf9fa;
             border: 1px solid #f5f3f3;
             border-radius: 5px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            
-            /* Ensure dropdown is on top */
         }
 
-        .dropdown-menu a {
-            display: block;
-            padding: 10px 15px;
-            color: #333;
-            text-decoration: none;
-        }
-
-        .dropdown-menu a:hover {
-            background-color: #fefbfb;
-        }
-
-        /* Show dropdown menu on hover */
         nav ul li:hover .dropdown-menu {
             display: block;
         }
 
-        /* Left-side buttons for Auto Driver and Customer */
-        .left-buttons {
-            position: absolute;
-            top: 50%;
-            left: 20px;
-            transform: translateY(-50%);
+        .dropdown-menu a {
+            padding: 10px 15px;
+            display: block;
+        }
+
+        .hero {
+            background-image: url('/auto.png');
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+            color: white;
+            flex-grow: 1;
+        }
+
+        .hero h1 {
+            margin-top: 80px;
+            font-size: 48px;
+            color: green;
+        }
+
+        .hero p {
+            color: rgb(83, 83, 231);
+            margin-top: 1.5vh;
+        }
+
+        .flex-container {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            transition: all 0.3s ease-in-out;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            margin: 30px 0;
+        }
 
+        .auto-img {
+            text-align: center;
+        }
 
+        .auto-img img {
+            width: 700px; /* Doubled size */
+            height: auto;
+        }
+
+        .glass-box {
+            background: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 80px; /* Doubled size */
+            width: 500px; /* Doubled size */
+            text-align: center;
+        }
+
+        .glass-box h1 {
+            font-size: 36px;
+            color: black;
+        }
+
+        .left-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 20px;
         }
 
         .left-buttons .btn {
-
-            display: inline-block;
             padding: 10px 20px;
             background-color: rgb(5, 164, 5);
             color: white;
-            text-align: center;
             font-weight: bold;
             font-size: 16px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            top: 150%;
-            position: relative;
-            bottom: -22vh;
-            left: 25vw;
-            margin-top: 1vh;
-
+            width: 150px;
         }
 
         .left-buttons .btn a {
@@ -135,93 +152,15 @@
             background-color: rgb(5, 100, 30);
         }
 
-        /* Hero section */
-        .hero {
-            flex-grow: 10;
-            background-image: url('/auto.png');
-            /* Replace with actual image */
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            text-align: center;
-            color: white;
-        }
-
-        .hero h1 {
-            margin-top: 80px;
-            font-size: 48px;
-            color: green;
-            top: 50%;
-        }
-
-        .hero p {
-            color: rgb(83, 83, 231);
-            margin-top: 1.5vh;
-        }
-
-        .search-bar {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .search-bar input,
-        .search-bar button {
-            padding: 10px;
-            margin: 0 5px;
-        }
-
-        /* Curved Background Section (Bottom Right) */
-        .curved-background {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, red 50%, transparent 50%);
-            border-radius: 50%;
-        }
-
-        .curved-background img {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 3px solid white;
-        }
-
-        /* Footer */
+        /* Fixed Footer */
         footer {
             background-color: #333;
             color: #fff;
             text-align: center;
             padding: 20px;
-        }
-
-        .Auto-img img {
-            height: 50vh;
-            width: 30vw;
-            position: absolute;
-            left: 750px;
-            top: 40%;
-
-        }
-        .comment{
-            left: 200px;
-            position: relative;
-            color: black;
-            margin: 30px;
-            padding: 10px;
-            top: 1vh;
-            bottom: 10vw;
-        }
-        .logo{
-            left: 4vw;
-            position: relative;
-
+            position: fixed;
+            bottom: 0;
+            width: 100%;
         }
     </style>
 </head>
@@ -242,44 +181,43 @@
                         </div>
                     </li>
                     <li><a href="#">More</a>
-                        <div class="dropdown-menu 1">
+                        <div class="dropdown-menu">
                             <a href="#">Download App</a>
                             <a href="#">About Us</a>
                         </div>
                     </li>
-
                 </ul>
             </nav>
         </header>
 
-        <!-- Left-side buttons for Auto Driver and Customer -->
-        <section class="Auto-img">
-            <img src="{% static 'auto-1.png' %}" alt="Auto Image">
-        </section>
-
+        <!-- Hero Section -->
         <section class="hero">
             <h1><i>Smooth rides healthy vibes</i></h1>
             <p>Convenient, Affordable, and Easy Auto Rentals</p>
         </section>
 
-        <div class="comment"> 
-            <h1>#1 Who Are You?</h1>
+        <!-- Flex container with glass box and image -->
+        <div class="flex-container">
+            <!-- Glass Box -->
+            <div class="glass-box">
+                <h1>#1 Who Are You?</h1>
+                <div class="left-buttons">
+                    <div class="btn"><a href="driver_form">Auto Driver</a></div>
+                    <div class="btn"><a href="customer_form">Customer</a></div>
+                </div>
+            </div>
+
+            <!-- Auto Image -->
+            <div class="auto-img">
+                <img src="{% static 'auto-1.png' %}" alt="Auto Image">
+            </div>
         </div>
 
-        <div class="left-buttons">
-            <!-- <button type="submit"><a href="driver_form"/></a>Auto Driver</button>
-        <button type="submit"><a href="customer_form"/></a>Customer</button> -->
-            <div class="btn"><a href="driver_form">Auto Driver</a></div>
-            <div class="btn"><a href="customer_form">Customer</a></div>
-        </div>
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2024 Sajilo-Auto. All Rights Reserved.</p>
+        </footer>
     </main>
-
-
-    <footer>
-        <p>&copy; 2024 Sajilo-Auto. All Rights Reserved.</p>
-    </footer>
-
-
 </body>
 
 </html>
