@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding-top: 100px; /* Adjust for header */
+        }
+
+        header {
+            background-color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            gap: 30px;
+           
+        }
+        nav ul li{
+            position: relative;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            padding: 8px 12px;
+            display: block;
+            margin-right: 45px;
+           
+        }
+
+        nav ul li a:hover {
+            background-color: rgb(88, 216, 88);
+            border-radius: 4px;
+        }
+        /* Dropdown content */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+
+        .dropdown-content a:hover {
+            background-color: rgb(88, 216, 88);
+        }
+
+        /* Show the dropdown menu on hover */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-left: -300px;
+            margin-right: 50px;
+            position: relative;
+            margin-top: 40px; /* Add more top margin for comfort */
+            padding: 0 20px; /* Add padding to ensure content is not too close to edges */
+           
+        }
+
+        /* Active Rides Section */
+        .active-rides, .ride-history {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            width:  55%; /* Adjust width as needed */
+            margin-bottom: 30px;
+        }
+
+        .active-rides h2, .ride-history h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .verify-btn, .review-btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: rgb(181, 181, 189);
+            color: white;
+            border: none;
+        }
+
+        /* Summary Section */
+        .ride-summary {
+            position: fixed;
+            top: 150px;
+            right: 50px;
+            width: 300px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .ride-summary h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .ride-summary table th, .ride-summary table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        
+        .mark-safe-btn {
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: rgb(4, 194, 4);
+    color: white;
+    border: none;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.mark-safe-btn:hover {
+    background-color: rgb(38, 130, 5); /* Change to a darker shade of blue on hover */
+    transform: scale(1.05); /* Slightly increase the button size */
+}
+
+ .mark-safe-btn:active {
+    
+ background-color: rgb(38, 130, 5); /* Change to an even darker shade when the button is clicked */
+}
+
+.review-btn {
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: default; /* This makes the button appear non-clickable */
+    background-color: rgb(5, 139, 5); /* You can choose a different color if needed */
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <h2>Customer Dashboard</h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">My Drives</a></li>
+                <li class="dropdown">
+                    <a href="#">Profile</a>
+                    <div class="dropdown-content">
+                        <a href="#">View Profile</a>
+                        <a href="#">Settings</a>
+                        <a href="#">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Active Rides Section -->
+        <div class="active-rides">
+            <h2>Active Drives</h2>
+            <table id="active-rides-table">
+                <thead>
+                    <tr>
+                        <th>Drive ID</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Price</th>
+                        <th>Distance</th>
+                        <th>Token</th>
+                        <th>Driver No</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                    <!-- Active rides will be inserted here -->
+                    <tbody>
+                        <!-- Active ride will be inserted here -->
+                        <tr>
+                            <td>01</td>
+                            <td>btm</td>
+                            <td>charali</td>
+                            <td>Rs 100</td>
+                            <td>10km</td>
+                            <td><input type="text" class="token-input" readonly></td>
+                            <td>45870</td>
+                            <td><button class="mark-safe-btn" onclick="markSafe(this)">Mark Safe</button></td>
+                        </tr>
+                    </tbody>
+            </table>
+        </div>
+
+        <!-- Ride History Section -->
+        <div class="ride-history">
+            <h2>Drive History</h2>
+            <table id="ride-history-table">
+                <thead>
+                    <tr>
+                        <th>Drive ID</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Price</th>
+                        <th>Distance</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Completed rides will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="ride-summary">
+        <h3>Summary</h3>
+        <table>
+            <tr>
+                <th>Total Drives</th>
+                <td id="total-rides">0</td>
+            </tr>
+            <tr>
+                <th>Total Amount Spent</th>
+                <td id="total-amount">Rs 0</td>
+            </tr>
+        </table>
+    </div>
+
+</body>
+<script>
+       
+       function markSafe(button) {
+    // Show a confirmation prompt
+    if (confirm("Are you sure you want to mark this drive as safe?")) {
+        // Get the row containing the clicked button
+        const row = button.closest('tr');
+
+        // Get the values from the active drive row
+        const driveID = row.cells[0].textContent;
+        const from = row.cells[1].textContent;
+        const to = row.cells[2].textContent;
+        const price = row.cells[3].textContent;
+        const distance = row.cells[4].textContent;
+
+        // Create a new row for the Drive History table
+        const driveHistoryTable = document.getElementById('ride-history-table').getElementsByTagName('tbody')[0];
+        const newRow = driveHistoryTable.insertRow();
+
+        newRow.innerHTML = `
+            <td>${driveID}</td>
+            <td>${from}</td>
+            <td>${to}</td>
+            <td>${price}</td>
+            <td>${distance}</td>
+            <td><button class="review-btn">Completed</button></td>
+        `;
+
+        // Remove the row from Active Drives
+        row.remove();
+
+        // Update the Summary
+        updateSummary();
+    }
+}
+
+function updateSummary() {
+    // Increment total drives by 1
+    const totalDrivesElem = document.getElementById('total-rides');
+    let totalDrives = parseInt(totalDrivesElem.textContent, 10);
+    totalDrives += 1;
+    totalDrivesElem.textContent = totalDrives;
+
+    // Update total amount spent
+    const totalAmountElem = document.getElementById('total-amount');
+    let totalAmount = parseInt(totalAmountElem.textContent.replace('Rs ', ''), 10);
+    const currentPrice = parseInt(document.getElementById('ride-history-table').lastElementChild.cells[3].textContent.replace('Rs ', ''), 10);
+    totalAmount += currentPrice;
+    totalAmountElem.textContent = 'Rs ' + totalAmount;
+}
+
+// Generate a random token and display it on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const token = Math.floor(100000 + Math.random() * 900000);
+    document.getElementById('token-input').value = token;
+});
+
+</script>
+</html>
