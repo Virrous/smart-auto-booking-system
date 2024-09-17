@@ -97,3 +97,6 @@ def customer_form(request):
 
 def customer_dash(request):
     return render(request, 'customer-dash.html')
+
+def mapping(request):
+    return render(request, 'mapping.html')
