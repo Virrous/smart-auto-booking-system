@@ -4,6 +4,9 @@ from .models import *
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
 
+def index(request):
+    return render(request, 'index.html')
+
 def driver_form(request):
      if request.method == 'POST':
         if 'login' in request.POST:
@@ -49,9 +52,9 @@ def driver_form(request):
                     return redirect('index')
 
      return render(request, 'driver_form.html')
-
-def index(request):
-    return render(request, 'index.html')
+ 
+def driver_dash(request):
+     return render(request, 'rider-dashboard.html')
 
 def customer_form(request):
     if request.method == 'POST':
@@ -91,3 +94,6 @@ def customer_form(request):
                     return redirect('index')
 
     return render(request, 'customer_form.html')
+
+def customer_dash(request):
+    return render(request, 'customer-dash.html')
