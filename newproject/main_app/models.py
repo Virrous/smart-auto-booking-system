@@ -33,6 +33,7 @@ class Driver(models.Model):
     password = models.CharField(max_length=280)
     city = models.CharField(max_length=20, choices=TYPE_CHOICES, default=NEWYORK)
     lisense_num = models.PositiveIntegerField()
+    auto_number = models.CharField(max_length=20, null=True)
 
     def __str__(self):
         return self.fname +" "+ self.lname
