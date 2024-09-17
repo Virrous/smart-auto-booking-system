@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SajiloAuto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding-top: 100px; /* Adjust this value to match the height of your header */
+        }
+
+        /* Header and Navbar Styling */
+        header {
+            background-color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+            position: fixed; /* Fix the header at the top */
+            top: 0;
+            left: 0;
+            width: 100%; /* Ensure it takes the full width of the viewport */
+            z-index: 1000; /* Ensure it's above other elements */
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            gap: 30px; /* Gap between the nav items */
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* Profile Icon Dropdown Menu */
+        .profile-icon {
+            position: relative; /* Position relative to control dropdown placement */
+            display: inline-block;
+            margin-left: 30px; /* Set the gap between the profile icon and the navbar */
+        }
+
+        .profile-icon img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid red; /* Add a border to the profile image */
+        }
+
+        .dropdown-menu {
+            display: none; /* Hide by default */
+            position: absolute;
+            top: 60px; /* Adjust based on the height of the profile icon */
+            right: 0;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000; /* Ensure it's above other elements */
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f4f4f4;
+        }
+
+        .dropdown-menu a:last-child {
+            border-bottom: none; /* Remove border for the last item */
+        }
+
+        /* Review Order Section */
+        .review-orders {
+            margin: 50px;
+            margin-bottom: 3cm; /* Maintain a 3cm gap between this and the verify token container */
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            width: 65%;
+            float: left;
+            clear: both; /* Ensure this section is clear of any previous floats */
+        }
+
+        .review-orders h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 5px; /* Reduced padding for smaller row size */
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+        }
+
+        .status-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .accept-btn, .reject-btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            color: white;
+        }
+
+        .accept-btn {
+            background-color: green;
+        }
+
+        .reject-btn {
+            background-color: red;
+        }
+
+        /* Token Verification Section */
+        .verify-token {
+            margin: 50px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            width: 65%;
+            float: left;
+            clear: both; /* Ensure this section starts below the review-orders section */
+        }
+
+        .verify-token h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .verify-token table th, .verify-token table td {
+            padding: 5px; /* Reduced padding for smaller row size */
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .verify-token input[type="number"] {
+            padding: 5px;
+            width: 100px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .verify-token .verify-btn {
+            padding: 5px 15px;
+            border-radius: 5px;
+            background-color: blue;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Income Summary Container (styled as a table) */
+        .income-summary {
+            position: absolute;
+            top: 145px; /* Adjust this value based on header height */
+            right: 55px;
+            width: 350px; /* Fixed width for the container */
+            padding: 20px;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            background-color: #fff;
+        }
+
+        .income-summary h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            text-align: center;
+            
+        }
+
+        .income-summary table {
+            width: 100%;
+            border-collapse: collapse;
+            
+        }
+
+        .income-summary th, .income-summary td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .income-summary th {
+            font-weight: bold;
+            background-color: #fff;
+        }
+
+        .income-summary td {
+            font-size: 16px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            clear: both; /* Clear floats */
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <h2>SajiloAuto</h2>
+        </div>
+        <!-- Navigation -->
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </ul>
+        </nav>
+        
+        <div class="profile-icon">
+            <a href="#" id="profile-menu-toggle">
+                <img src="/profile1.png" alt="Profile"> 
+            </a>
+            <!-- Dropdown Menu -->
+            <div id="profile-menu" class="dropdown-menu">
+                <a href="/profile-page.html">View Profile</a>
+                <a href="#">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Review Orders Section -->
+    <section class="review-orders">
+        <h2>Review Rides</h2>
+        <table id="review-orders-table">
+            <thead>
+                <tr>
+                    <th>Sl. No</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Type</th> <!-- New column for One Way/Both Way -->
+                    <th>Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Example rows -->
+                <tr data-id="1" data-type="One Way" data-price="80">
+                    <td>1</td>
+                    <td>Shrestha</td>
+                    <td>9824055412</td>
+                    <td>BTM</td>
+                    <td>Charali</td>
+                    <td>One Way</td> <!-- New entry for the type -->
+                    <td>Rs 80</td>
+                    <td class="status-buttons">
+                        <button class="accept-btn">Accept</button>
+                        <button class="reject-btn">Reject</button>
+                    </td>
+                </tr>
+                <tr data-id="2" data-type="Both Way" data-price="100">
+                    <td>2</td>
+                    <td>Hari</td>
+                    <td>987654321</td>
+                    <td>Deonia</td>
+                    <td>BTM</td>
+                    <td>Both Way</td> <!-- New entry for the type -->
+                    <td>Rs 100</td>
+                    <td class="status-buttons">
+                        <button class="accept-btn">Accept</button>
+                        <button class="reject-btn">Reject</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Token Verification Section -->
+    <section class="verify-token">
+        <h2>Active Ride</h2>
+        <table id="active-ride-table">
+            <thead>
+                <tr>
+                    <th>Sl. No</th>
+                    <th>Name</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Price</th> <!-- Added Price column -->
+                    <th>Token Number</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Example rows -->
+                
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Income Summary Section (styled as a table) -->
+    <div class="income-summary">
+        <h3>Today's Summary</h3>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Total Rides Taken</th>
+                    <td id="total-rides-taken">0</td>
+                </tr>
+                <tr>
+                    <th>One Way Rides</th>
+                    <td id="one-way-rides">0</td>
+                </tr>
+                <tr>
+                    <th>Two Way Rides</th>
+                    <td id="two-way-rides">0</td>
+                </tr>
+                <tr>
+                    <th>Today's Total Income</th>
+                    <td id="todays-total-income">Rs 0</td>
+                </tr>
+                <tr>
+                    <th>Total Km Travelled</th>
+                    <td id="total-km-travelled">0 K.M.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <p>&copy; SajiloAuto 2024. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // JavaScript for handling the Accept and Reject buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            const reviewTable = document.getElementById('review-orders-table');
+            const activeTable = document.getElementById('active-ride-table');
+            const profileMenu = document.getElementById('profile-menu');
+            const profileMenuToggle = document.getElementById('profile-menu-toggle');
+
+            // Function to update income summary
+            function updateIncomeSummary(totalRides, oneWayRides, twoWayRides, totalIncome) {
+                document.getElementById('total-rides-taken').textContent = totalRides;
+                document.getElementById('one-way-rides').textContent = oneWayRides;
+                document.getElementById('two-way-rides').textContent = twoWayRides;
+                document.getElementById('todays-total-income').textContent = `Rs ${totalIncome}`;
+            }
+
+            let totalRides = parseInt(document.getElementById('total-rides-taken').textContent);
+            let oneWayRides = parseInt(document.getElementById('one-way-rides').textContent);
+            let twoWayRides = parseInt(document.getElementById('two-way-rides').textContent);
+            let todaysTotalIncome = parseInt(document.getElementById('todays-total-income').textContent.replace('Rs ', ''));
+
+            // Accept Button Event
+            reviewTable.addEventListener('click', (event) => {
+                if (event.target.classList.contains('accept-btn')) {
+                    const row = event.target.closest('tr');
+                    const rideId = row.getAttribute('data-id');
+                    const name = row.cells[1].textContent;
+                    const from = row.cells[3].textContent;
+                    const to = row.cells[4].textContent;
+                    const type = row.getAttribute('data-type');
+                    const price = parseInt(row.getAttribute('data-price'));
+
+                    // Remove row from review table
+                    row.remove();
+
+                    // Add row to active table
+                    const activeRow = document.createElement('tr');
+                    activeRow.setAttribute('data-id', rideId);
+                    activeRow.setAttribute('data-type', type);
+                    activeRow.setAttribute('data-price', price);
+                    activeRow.innerHTML = `
+                        <td>${rideId}</td>
+                        <td>${name}</td>
+                        <td>${from}</td>
+                        <td>${to}</td>
+                        <td>Rs ${price}</td>
+                        <td><input type="number" placeholder="Enter token" class="token-input"></td>
+                        <td><button class="verify-btn">Verify</button></td>
+                    `;
+                    activeTable.querySelector('tbody').appendChild(activeRow);
+
+                    // Update income summary
+                    if (type === 'One Way') {
+                        oneWayRides++;
+                    } else if (type === 'Both Way') {
+                        twoWayRides++;
+                    }
+                    updateIncomeSummary(totalRides, oneWayRides, twoWayRides, todaysTotalIncome);
+                }
+            });
+
+            // Reject Button Event
+            reviewTable.addEventListener('click', (event) => {
+                if (event.target.classList.contains('reject-btn')) {
+                    const row = event.target.closest('tr');
+                    // Remove row from review table
+                    row.remove();
+                }
+            });
+
+            // Verify Button Event
+            activeTable.addEventListener('click', (event) => {
+                if (event.target.classList.contains('verify-btn')) {
+                    const row = event.target.closest('tr');
+                    const tokenInput = row.querySelector('.token-input');
+                    const rideId = row.getAttribute('data-id');
+                    const type = row.getAttribute('data-type');
+                    const price = parseInt(row.getAttribute('data-price'));
+
+                    // Validate token (for simplicity, we assume any token is valid)
+                    if (tokenInput.value) {
+                        // Remove row from active table
+                        row.remove();
+
+                        // Update income summary
+                        totalRides++;
+                        if (type === 'One Way') {
+                            oneWayRides++;
+                        } else if (type === 'Both Way') {
+                            twoWayRides++;
+                        }
+                        todaysTotalIncome += price;
+                        updateIncomeSummary(totalRides, oneWayRides, twoWayRides, todaysTotalIncome);
+                    } else {
+                        alert('Please enter a token number.');
+                    }
+                }
+            });
+
+            // Profile Menu Toggle
+            profileMenuToggle.addEventListener('click', (event) => {
+                event.preventDefault();
+                profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Close dropdown menu if clicked outside
+            document.addEventListener('click', (event) => {
+                if (!profileMenu.contains(event.target) && event.target !== profileMenuToggle) {
+                    profileMenu.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
