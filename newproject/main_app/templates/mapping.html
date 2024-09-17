@@ -170,11 +170,8 @@
                 <button id="selectDestination" class="button-select" disabled>Select Destination</button>
                 <!-- <button id="confirmRide" class="button-confirm" disabled>Confirm Ride</button> -->
 
-                <a href="/customer-dashboard.html" id="confirmRideLink" class="button-confirm-link" style="text-decoration: none;">
-                    <button id="confirmRide" class="button-confirm" >Confirm Ride</button>
-                </a>
-                
-
+                {% comment %} <a href="/customer-dashboard.html" id="confirmRideLink" class="button-confirm-link" style="text-decoration: none;"> {% endcomment %}
+                 <button id="confirmRide" class="button-confirm" onclick="window.location.href='{% url 'customer_dash' %}'">Confirm Ride</button>
             </div>
         </div>
 
