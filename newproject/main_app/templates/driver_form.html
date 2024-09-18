@@ -132,8 +132,8 @@
             <!-- Login Form -->
             <form id="login-form" class="active" method="post">
                 {% csrf_token %}
-                <label for="login-email">Email:</label>
-                <input type="email" id="login-email" name="email" placeholder="Enter your email" required>
+                <label for="login-autoNum">Auto number:</label>
+                <input type="text" id="login-autoNum" name="auto-num" placeholder="Enter your email" required>
 
                 <label for="login-password">Password:</label>
                 <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
@@ -173,7 +173,11 @@
                 <input type="date" id="dob" required> -->
 
                 <label for="license-num">License Number:</label>
-                <input type="text" id="license-num" name="lisense-num" placeholder="Enter your license number" required>
+                <input type="number" id="license-num" name="lisense-num" placeholder="Enter your license number" required>
+
+                <label for="auto-num">Auto Number:</label>
+                <input type="text" id="auto-num" name="auto-num" placeholder="Enter your Auto number" required>
+                
 
                 {% comment %} <label for="license-pic">Upload License Picture:</label>
                 <input type="file" id="license-pic" name="lisense-pic" accept="image/*" required> {% endcomment %}

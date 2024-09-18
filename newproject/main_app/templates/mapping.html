@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding-top: 100px; /* Adjust for header */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+        
+        header {
+            background-color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Map and Fare Section */
+        .map-container {
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            position: relative;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-bottom: 2px solid #ccc;
+        }
+
+        .controls .info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .controls .info p {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .controls .info span {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+        }
+
+        .button-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .button-select {
+            background-color: #ff9800; /* Orange */
+            color: white;
+        }
+
+        .button-selected {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+
+        .button-confirm {
+            background-color: #2196F3; /* Blue */
+            color: white;
+        }
+
+        .heading {
+            padding-top: 5px;
+            padding-left: 42%;
+            position: fixed;
+            z-index: 1001; /* Ensure it remains above other content */
+            background-color: #fff; /* To ensure text visibility */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <h2>SajiloAuto</h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">My Rides</a></li>
+                <li><a href="#">Profile</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <h2><center>Select Your Destination</center></h2>
+
+    <!-- Map and Fare Section -->
+    <div class="map-container">
+        <div class="controls">
+            <div>
+                <label>
+                    <input type="radio" name="tripType" value="one-way" checked> One-Way
+                </label>
+                <label>
+                    <input type="radio" name="tripType" value="two-way"> Two-Way
+                </label>
+            </div>
+            
+            <div class="info">
+                <p><strong>Distance:</strong> <span id="distance">0</span> km</p>
+                <p><strong>Fare (Rs.):</strong> <span id="fare">0</span></p>
+            </div>
+            
+            <div>
+                <button id="selectDestination" class="button-select" disabled>Select Destination</button>
+                <!-- <button id="confirmRide" class="button-confirm" disabled>Confirm Ride</button> -->
+
+                {% comment %} <a href="/customer-dashboard.html" id="confirmRideLink" class="button-confirm-link" style="text-decoration: none;"> {% endcomment %}
+                 <button id="confirmRide" class="button-confirm" onclick="window.location.href='{% url 'customer_dash' %}'">Confirm Ride</button>
+            </div>
+        </div>
+
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script>
+        // Initialize variables
+        let startPoint, endPoint, startMarker, endMarker;
+        let isSelectingEnd = false;
+        let miniRoute;
+
+        // Initialize the main map
+        const map = L.map('map').setView([27.7172, 85.3240], 13); // Centered on Kathmandu
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        // Get the current location automatically when the page loads
+        window.onload = function() {
+            getCurrentLocation();
+        };
+
+        // Function to get the current location
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        startPoint = L.latLng(latitude, longitude);
+
+                        // Add a marker to the map for the current location
+                        if (startMarker) map.removeLayer(startMarker);
+                        startMarker = L.marker(startPoint).addTo(map).bindPopup("Current Location").openPopup();
+
+                        document.getElementById('selectDestination').disabled = false; // Enable the "Select Destination" button
+                        map.setView(startPoint, 13);  // Center the map on the current location
+                    },
+                    function() {
+                        alert("Unable to retrieve your location.");
+                    }
+                );
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Event listener for selecting the destination
+        document.getElementById('selectDestination').addEventListener('click', function() {
+            if (!startPoint) {
+                alert("Please confirm your current location first.");
+                return;
+            }
+            isSelectingEnd = !isSelectingEnd; // Toggle selection mode
+
+            // Toggle button color based on the selection mode
+            if (isSelectingEnd) {
+                this.classList.remove('button-select');
+                this.classList.add('button-selected');
+                document.getElementById('confirmRide').disabled = false; // Enable "Confirm Ride" button
+            } else {
+                this.classList.remove('button-selected');
+                this.classList.add('button-select');
+                document.getElementById('confirmRide').disabled = true; // Disable "Confirm Ride" button
+            }
+        });
+
+        // Handle clicks on the map for selecting destination points
+        map.on('click', function(e) {
+            if (isSelectingEnd) {
+                endPoint = e.latlng;
+
+                // Add a marker to the map for the destination
+                if (endMarker) map.removeLayer(endMarker);
+                endMarker = L.marker(endPoint).addTo(map).bindPopup("Destination").openPopup();
+
+                // Clear previous route from the map
+                if (miniRoute) miniRoute.remove();
+
+                // Calculate and display the route
+                miniRoute = L.Routing.control({
+                    waypoints: [startPoint, endPoint],
+                    lineOptions: {
+                        styles: [{ color: 'blue', weight: 4 }]
+                    },
+                    createMarker: function() { return null; } // Don't add extra markers
+                }).addTo(map);
+
+                // Calculate distance and fare
+                const distance = map.distance(startPoint, endPoint) / 1000; // Convert to km
+                const tripType = document.querySelector('input[name="tripType"]:checked').value;
+                const adjustedDistance = tripType === 'two-way' ? distance * 2 : distance;
+                const fare = calculateFare(adjustedDistance);
+                document.getElementById('distance').textContent = adjustedDistance.toFixed(2);
+                document.getElementById('fare').textContent = fare.toFixed(2);
+
+                isSelectingEnd = false; // Reset after selection
+                document.getElementById('selectDestination').classList.remove('button-selected');
+                document.getElementById('selectDestination').classList.add('button-select');
+                document.getElementById('confirmRide').disabled = false; // Enable "Confirm Ride" button
+            }
+        });
+
+        // Function to calculate fare based on distance
+        function calculateFare(distance) {
+            const baseFare = 50; // Base fare in Rs.
+            const perKmRate = 20; // Rate per km in Rs.
+            return baseFare + (distance * perKmRate);
+        }
+
+        // Event listener for trip type changes
+        document.querySelectorAll('input[name="tripType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Recalculate fare and distance if the trip type changes
+                if (startPoint && endPoint) {
+                    const distance = map.distance(startPoint, endPoint) / 1000; // Convert to km
+                    const tripType = document.querySelector('input[name="tripType"]:checked').value;
+                    const adjustedDistance = tripType === 'two-way' ? distance * 2 : distance;
+                    const fare = calculateFare(adjustedDistance);
+                    document.getElementById('distance').textContent = adjustedDistance.toFixed(2);
+                    document.getElementById('fare').textContent = fare.toFixed(2);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
