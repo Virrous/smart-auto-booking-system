@@ -7,6 +7,9 @@ from django.contrib.auth.hashers import make_password,check_password
 def index(request):
     return render(request, 'index.html')
 
+def about(request):
+    return render(request, 'Aboutus.html')
+
 def driver_form(request):
      if request.method == 'POST':
         if 'login' in request.POST:
@@ -84,8 +87,11 @@ def customer_form(request):
 
     return render(request, 'customer_form.html')
 
+def mapping(request):
+    return render(request, 'mapping.html')
+
 def customer_dash(request):
     return render(request, 'customer-dash.html')
 
-def mapping(request):
-    return render(request, 'mapping.html')
+def customer_profile(request):
+    return render(request, 'profile.html')
